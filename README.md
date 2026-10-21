@@ -39,15 +39,6 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 
 Python 3.11+. Premier lancement : ~1 min de calcul, mis en cache dans `data/cache/`.
 
-<details>
-<summary>Méthode et limites</summary>
-
-- **Espace** : distance au défenseur le plus proche. **Plus libre** : le plus d'espace, à 2 yd ou plus au-delà de la ligne. **Oublié** : 5 yd d'espace ou plus, non visé.
-- **Passe possible** : ballon à 20 yd/s, défenseurs à 8 yd/s après 0,3 s de réaction ; possible si le ballon arrive 0,5 s avant eux, contestée s'ils arrivent avant.
-- **Regard** : cône de ±30° selon les épaules (orientation `o`), pas les yeux.
-- **Limites** : corrélations, pas causes ; la suite après le lancer est simulée, seul le résultat est réel.
-</details>
-
 ## Structure du dépôt
 
 ```
