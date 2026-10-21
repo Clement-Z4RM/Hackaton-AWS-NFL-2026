@@ -6,8 +6,6 @@ Un outil qui rejoue chaque passe NFL à partir du tracking Next Gen Stats et dit
 
 ![Stafford vise Kupp (passe contestée) : interceptée. Henderson était seul, passe possible.](outputs/demo_interface.gif)
 
-▶ **[Vidéo de démonstration (MP4, 22 s)](assets/demo_application.mp4)**
-
 ## Fonctionnalités
 
 | | |
@@ -20,6 +18,12 @@ Un outil qui rejoue chaque passe NFL à partir du tracking Next Gen Stats et dit
 | **Import** | Glisser-déposer les CSV d'un match ; export de n'importe quelle action en GIF |
 
 **Le modèle tient** : une passe jugée possible est réussie à **79 %**, une passe contestée à **57 %**.
+
+## Démo
+
+![Démonstration de l'application](assets/demo_application.gif)
+
+*Vidéo d'origine en MP4 : [assets/demo_application.mp4](assets/demo_application.mp4) (téléchargement).*
 
 | Vue 3D du quarterback | Tendances | Carte des oublis |
 |---|---|---|
