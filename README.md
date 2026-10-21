@@ -19,25 +19,6 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt && ./download
 |---|---|
 | ![Vue 3D depuis les yeux du quarterback](outputs/demo_vue_3d.gif) | ![Tendances](outputs/site_tendances.png) |
 
-<details>
-<summary><b>Méthode, hypothèses et limites</b></summary>
+Autre enregistrements et capture de l'application:
 
-- **Espace** : distance entre un receveur (WR, TE, RB) et le défenseur le plus proche, image par image.
-- **Plus libre** : le receveur qui a le plus d'espace au lancer, parmi ceux à 2 yards ou plus au-delà de la ligne de départ. **Oublié** : il a 5 yards d'espace ou plus, et la cible en a au moins 2 de moins. Résultat : 71 % des passes ne visent pas le plus libre, 16 % ignorent un receveur seul ; viser le plus libre donne 71 % de passes réussies contre 60 %.
-- **Passe possible** : ballon en ligne droite à 20 yd/s vers le meilleur point de la course du receveur ; chaque défenseur réagit en 0,3 s puis court à 8 yd/s (ou plus vite s'il court déjà). Marge = arrivée du défenseur le plus rapide − arrivée du ballon : possible ≥ 0,5 s, serrée 0 à 0,5 s, contestée < 0. Paramètres réglables dans l'outil.
-- **Validation** (passe réellement tentée) : 79 % de réussite si « possible » (994 passes), 65 % si « serrée » (2 935), 57 % si « contestée » (3 161).
-- **Regard** : cône de ±30° dans la direction des épaules (orientation `o`), donc le buste et pas les yeux.
-- **Suite simulée** : les mesures s'arrêtent 0,5 s après le lancer ; les joueurs continuent ensuite sur leur lancée et seul le résultat affiché est réel.
-- **Cible** : extraite du texte de l'action, retrouvée pour 94 % des passes tentées.
-- **Limites** : corrélations, pas causes ; ni la pression subie par le quarterback ni la hauteur du ballon ne sont modélisées.
-</details>
-
-<details>
-<summary><b>Code et fonctionnalités</b></summary>
-
-- `common.py` : chargement, normalisation du sens du jeu, espace au lancer, cible.
-- `passing.py` : modèle « passe possible » (par action et sur toutes les passes, avec validation).
-- `backend.py`, `server.py` : backend Python (Flask) et API, suite simulée, import de fichiers par glisser-déposer ; `features/` : temps seul, regard, carte des oublis, passes, export GIF.
-- `web/` : interface (Données, Action, Tendances) ; `web/features/` : vue 3D, regard, temps seul, zones de contrôle, carte des oublis.
-- `prototypes/ghost_targets.py` : premiers chiffres et graphiques ; `main.py` les régénère dans `outputs/`.
-</details>
+https://drive.google.com/drive/folders/1le2V__tYpMyLDaUfBlPMzC9-OtdvAYjE?usp=sharing
