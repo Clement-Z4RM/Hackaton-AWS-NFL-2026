@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Passes · NFL 2021</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="topbar">
+    <a class="brand" href="#accueil"><b>PASSES</b><span>NFL 2021 · S1–S8</span></a>
+    <div class="nav-tabs">
+      <a href="#accueil" data-view="home">Données</a>
+      <a href="#analyse" data-view="analysis">Action</a>
+      <a href="#tendances" data-view="trends">Tendances</a>
+    </div>
+    <span class="muted" id="datasetInfo"></span>
+  </nav>
+
+  <!-- ============================================================ DONNÉES / ACCUEIL -->
+  <section id="home" class="view home">
+    <div class="home-inner">
+      <div class="hero">
+        <div>
+          <div class="kicker">Big Data Bowl · Paris Side Quest</div>
+          <h1>Décisions de passe, receveur par receveur</h1>
+          <p>Chaque passe est rejouée à partir des positions des 22 joueurs (Next Gen Stats, 10 mesures par seconde).
+             Au moment du lancer, l'outil liste les receveurs disponibles, leur espace, et calcule si le ballon pouvait
+             arriver avant le défenseur le plus rapide.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#analyse">Ouvrir une action</a>
+            <a class="btn" href="#tendances">Tendances</a>
+          </div>
+          <div class="facts" id="keyFacts"></div>
+        </div>
+        <div class="drop" id="drop">
+          <div class="kicker">Importer un match</div>
+          <h3>Déposer les fichiers CSV ici</h3>
+          <p><code>tracking_&lt;match&gt;.csv</code> suffit pour un match déjà référencé.
+             Pour un nouveau match : <code>games.csv</code>, <code>plays.csv</code>, <code>players.csv</code>,
+             <code>pffScoutingData.csv</code>.</p>
+          <label class="btn">Parcourir…<input type="file" id="fileInput" multiple accept=".csv" hidden></label>
+          <div id="uploadStatus" class="upload-status"></div>
+        </div>
+      </div>
+
+      <div class="cols">
+        <div>
+          <h2>Dans l'outil</h2>
+          <dl class="features">
+            <dt>Replay</dt>
+            <dd>Vue du dessus, ralenti, image par image. Après la fin des mesures, le vol du ballon est simulé jusqu'au receveur et le résultat réel s'affiche.</dd>
+            <dt>Options au lancer</dt>
+            <dd>Pour chaque receveur : espace, temps seul, présence dans le regard du lanceur, et verdict possible / serrée / contestée avec la marge en secondes.</dd>
+            <dt>Vue lanceur</dt>
+            <dd>Perspective depuis la poche, à hauteur des yeux : qui est visible, qui est masqué par la ligne.</dd>
+            <dt>Calques</dt>
+            <dd>Cône de regard (orientation des épaules), temps seul, zones de contrôle, zones d'oubli de l'équipe.</dd>
+            <dt>Tendances</dt>
+            <dd>Fiabilité du modèle, receveurs les plus oubliés, temps libre ignoré, lanceurs qui ne regardent pas le receveur libre.</dd>
+          </dl>
+        </div>
+        <div>
+          <h2>Définitions</h2>
+          <dl class="glossary">
+            <dt>Espace</dt><dd>Distance entre le receveur et le défenseur le plus proche.</dd>
+            <dt>Plus libre</dt><dd>Receveur avec le plus d'espace, parmi ceux à 2 yd ou plus au-delà de la ligne.</dd>
+            <dt>Oublié</dt><dd>Le plus libre a 5 yd d'espace ou plus, et la cible en a au moins 2 de moins.</dd>
+            <dt>Marge</dt><dd>Arrivée du défenseur le plus rapide moins arrivée du ballon. Possible ≥ 0,5 s ; serrée 0–0,5 s ; contestée &lt; 0.</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ ACTION -->
+  <section id="analysis" class="view analysis" hidden>
+    <aside class="sidebar">
+      <select id="game" title="Match"><option value="">Tous les matchs</option></select>
+      <select id="team" title="Équipe en attaque"><option value="">Toutes les équipes</option></select>
+      <label class="check"><input type="checkbox" id="ghostOnly" checked> Receveur oublié uniquement</label>
+      <div id="playerFilter" class="chip" hidden></div>
+      <div class="list-head" id="listHead"></div>
+      <div id="plays" class="list"></div>
+    </aside>
+
+    <section class="stage">
+      <div class="field-toolbar">
+        <div class="seg" id="viewSeg">
+          <button data-v="top" class="on" title="Vue du dessus">Dessus</button>
+          <button data-v="3d" title="Vue depuis les yeux du lanceur">Lanceur</button>
+          <button data-v="both" title="Vue du dessus avec la vue lanceur en vignette">Les deux</button>
+        </div>
+        <div class="chips" id="layerChips"></div>
+        <button id="gifBtn" class="ghost-btn" title="Exporter l'action en GIF animé">Export GIF</button>
+      </div>
+      <div class="field-wrap" id="fieldWrap">
+        <canvas id="field"></canvas>
+        <div id="view3d" hidden></div>
+        <div id="view3dMini" hidden></div>
+      </div>
+      <div class="controls">
+        <button id="playBtn" title="Lecture / pause (barre d'espace)">▶</button>
+        <button id="restartBtn" title="Revoir depuis le début">↺</button>
+        <button id="throwBtn" title="Aller au moment du lancer">Lancer</button>
+        <input type="range" id="scrub" min="0" max="0" step="0.01" value="0">
+        <span id="clock" class="clock">0,0 s</span>
+        <select id="speed" title="Vitesse">
+          <option value="0.25">× 0,25</option>
+          <option value="0.5" selected>× 0,5</option>
+          <option value="1">× 1</option>
+        </select>
+        <label class="check"><input type="checkbox" id="pauseThrow" checked> Pause au lancer</label>
+      </div>
+      <div class="timeline-box">
+        <div class="tl-head">
+          <h3>Espace par receveur (yd)</h3>
+          <div id="timelineLegend" class="legend"></div>
+        </div>
+        <canvas id="timeline"></canvas>
+      </div>
+    </section>
+
+    <aside class="report">
+      <section class="block">
+        <div class="eyebrow" id="playMeta"></div>
+        <div id="verdict" class="verdict">Sélectionner une action.</div>
+        <div id="outcome" class="outcome"></div>
+      </section>
+      <section class="block">
+        <h3>Options au lancer</h3>
+        <p id="optionsSummary" class="summary"></p>
+        <table class="options" id="optionsTable"></table>
+        <details class="assumptions">
+          <summary>Paramètres du calcul</summary>
+          <p>Ballon en ligne droite ; chaque défenseur réagit en 0,3 s puis court vers le point de réception.</p>
+          <label>Vitesse du ballon <b id="ballVal">20</b> yd/s<input type="range" id="ballSpeed" min="14" max="26" step="1" value="20"></label>
+          <label>Vitesse des défenseurs <b id="defVal">8</b> yd/s<input type="range" id="defSpeed" min="6" max="10" step="0.5" value="8"></label>
+        </details>
+      </section>
+      <section class="block">
+        <h3>Notes</h3>
+        <div id="badges" class="badges"></div>
+      </section>
+      <section class="block" id="layerSettings" hidden></section>
+      <section class="block legend-block">
+        <div class="legend">
+          <span><i class="dot off"></i>Attaque</span>
+          <span><i class="dot def"></i>Défense</span>
+          <span><i class="ring open"></i>Plus libre</span>
+          <span><i class="ring tgt"></i>Cible</span>
+          <span><i class="ring other"></i>Espace</span>
+        </div>
+      </section>
+    </aside>
+  </section>
+
+  <!-- ============================================================ TENDANCES -->
+  <section id="trends" class="view trends" hidden>
+    <div class="trends-inner">
+      <div class="kicker">Toutes les passes tentées</div>
+      <h1 class="page-title">Tendances</h1>
+      <div class="trends-grid" id="trendsGrid">
+        <div class="panel">
+          <h3>Fiabilité du verdict</h3>
+          <div id="validation" class="muted">Calcul en cours…</div>
+        </div>
+        <div class="panel">
+          <h3>Receveurs les plus oubliés</h3>
+          <div class="pos-filter">
+            <label><input type="checkbox" value="WR" checked> WR</label>
+            <label><input type="checkbox" value="TE" checked> TE</label>
+            <label><input type="checkbox" value="RB" checked> RB</label>
+          </div>
+          <div id="rankingList"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
