@@ -15,9 +15,9 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt && ./download
 
 *Stafford vise Cooper Kupp (passe contestée, −0,7 s) : **interceptée**. Darrell Henderson était seul à 10 yards, passe possible (+0,7 s). Suite simulée après la fin des mesures, résultat réel.*
 
-| Vue 3D du quarterback | Options au lancer | Tendances |
-|---|---|---|
-| ![Vue 3D](outputs/site_3d.png) | ![Analyse au lancer](outputs/site_analyse.png) | ![Tendances](outputs/site_tendances.png) |
+| La même action, vue par le quarterback | Tendances sur toutes les passes |
+|---|---|
+| ![Vue 3D depuis les yeux du quarterback](outputs/demo_vue_3d.gif) | ![Tendances](outputs/site_tendances.png) |
 
 <details>
 <summary><b>Méthode, hypothèses et limites</b></summary>

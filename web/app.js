@@ -290,7 +290,7 @@ async function selectPlay(gameId, playId, at = null) {
   markActive();
   if (at === "lancer" || at === true) { state.t = d.passIdx; pause(); }
   else if (at === "fin") { state.t = d.frames.length - 1; pause(); }
-  else if (/^f\d+$/.test(at ?? "")) { state.t = Math.min(+at.slice(1), d.frames.length - 1); pause(); }
+  else if (/^f\d+(\.\d+)?$/.test(at ?? "")) { state.t = Math.min(+at.slice(1), d.frames.length - 1); pause(); }
   else play();
   fire("select", d);
   render();
